@@ -1,0 +1,16 @@
+# Node
+node_modules/
+.env
+
+# Angular
+dist/
+.angular/
+coverage/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
