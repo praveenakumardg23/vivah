@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-hall-card',
@@ -11,5 +12,11 @@ import { CommonModule } from '@angular/common';
 export class HallCardComponent {
 
   @Input() hall: any;
+
+  constructor(private router: Router) {}
+
+  viewDetails() {
+    this.router.navigate(['/halls', this.hall?.id]);
+  }
 
 }

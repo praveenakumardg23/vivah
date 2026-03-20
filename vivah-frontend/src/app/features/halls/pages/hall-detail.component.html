@@ -1,0 +1,87 @@
+<div class="detail-container">
+
+  <!-- Image Banner -->
+  <div class="banner">
+    <div class="slider" (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)">
+
+      <img [src]="hall.images[currentIndex]" (click)="openFullscreen(currentIndex)" />
+
+      <!-- Arrows -->
+      <button class="prev" (click)="prev()">❮</button>
+      <button class="next" (click)="next()">❯</button>
+
+      <!-- Dots -->
+      <div class="dots">
+        <span 
+          *ngFor="let img of hall.images; let i = index"
+          [class.active]="i === currentIndex"
+          (click)="currentIndex = i">
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <h2>{{ hall.name }}</h2>
+    <p class="location">📍 {{ hall.location }}</p>
+
+    <!-- Info -->
+    <div class="info-grid">
+      <div>👥 Capacity: {{ hall.capacity }}</div>
+      <div>💰 Price: ₹{{ hall.price }}</div>
+    </div>
+
+    <!-- Amenities -->
+    <div class="amenities">
+      <h3>Amenities</h3>
+      <ul>
+        <li *ngFor="let item of hall.amenities">✔ {{ item }}</li>
+      </ul>
+    </div>
+
+    <div class="description">
+      <h3>Description</h3>
+
+      <p>
+        {{
+          showFullDescription
+            ? hall.description
+            : (hall.description | slice:0:120) + '...'
+        }}
+      </p>
+
+      <span class="toggle" (click)="toggleDescription()">
+        {{ showFullDescription ? 'Read less' : 'Read more' }}
+      </span>
+    </div>
+
+    <!-- Book Button -->
+    <button class="book-btn">Book Now</button>
+
+  </div>
+
+</div>
+
+@if(isFullscreen){
+<div 
+  class="fullscreen"
+  (touchstart)="onTouchStart($event)"
+  (touchend)="onTouchEnd($event)"
+>
+
+  <!-- Close Button -->
+  <span class="close" (click)="closeFullscreen()">✕</span>
+
+  <!-- Image -->
+  <img [src]="hall.images[currentIndex]" />
+
+  <!-- Arrows -->
+  <button class="prev" (click)="prev()">❮</button>
+  <button class="next" (click)="next()">❯</button>
+
+</div>
+}

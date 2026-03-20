@@ -12,5 +12,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/halls/pages/hall-list.component')
         .then(m => m.HallListComponent)
+  },
+  {
+    path: 'halls/:id',
+    loadComponent: () =>
+      import('./features/halls/pages/hall-detail.component')
+        .then(m => m.HallDetailComponent)
   }
 ];
