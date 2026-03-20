@@ -1,0 +1,55 @@
+.hall-card {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+
+  img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+  }
+
+  .info {
+    padding: 12px;
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .location {
+      font-size: 13px;
+      color: #555;
+    }
+
+    .price {
+      color: #d4af37;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #b71c1c;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  }
+}
+
+.hall-card {
+  transition: 0.3s;
+}
+
+.hall-card:hover {
+  transform: translateY(-5px);
+}
+

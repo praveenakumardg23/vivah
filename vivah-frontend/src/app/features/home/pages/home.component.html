@@ -1,0 +1,39 @@
+<div class="home">
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <h1>Find Your Perfect Wedding Hall 💍</h1>
+    <p>Book mantapas easily across your city</p>
+  </div>
+
+  <!-- Search Box -->
+  <div class="search-box">
+    <select [(ngModel)]="selectedLocation">
+      <option *ngFor="let loc of locations">{{ loc }}</option>
+    </select>
+
+    <input type="date" />
+
+    <button (click)="search()">Search</button>
+  </div>
+
+  <!-- Categories -->
+  <div class="categories">
+    <div class="category">🏛️ Large Halls</div>
+    <div class="category">💒 Small Venues</div>
+    <div class="category">🌳 Outdoor</div>
+  </div>
+
+  <!-- Featured Halls -->
+  <div class="featured">
+    <h2>Featured Venues</h2>
+
+    <div class="hall-grid">
+      <app-hall-card 
+        *ngFor="let hall of featuredHalls"
+        [hall]="hall">
+      </app-hall-card>
+    </div>
+  </div>
+
+</div>
