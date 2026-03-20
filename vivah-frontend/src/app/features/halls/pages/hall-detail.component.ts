@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-hall-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './hall-detail.component.html',
   styleUrls: ['./hall-detail.component.scss']
 })
@@ -21,6 +22,14 @@ export class HallDetailComponent {
   hall: any;
 
   showFullDescription = false;
+
+  booking = {
+    date: '',
+    guests: 100,
+    notes: ''
+  };
+
+  today = new Date().toISOString().split('T')[0];
 
   constructor(private route: ActivatedRoute) {
     this.hallId = this.route.snapshot.paramMap.get('id');
@@ -88,5 +97,10 @@ export class HallDetailComponent {
 
   closeFullscreen() {
     this.isFullscreen = false;
+  }
+
+  bookNow() {
+    console.log('Booking Details:', this.booking);
+    alert('Booking submitted!');
   }
 }

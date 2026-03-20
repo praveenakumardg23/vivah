@@ -59,8 +59,32 @@
       </span>
     </div>
 
-    <!-- Book Button -->
-    <button class="book-btn">Book Now</button>
+    <div class="booking">
+
+      <h3>Book This Hall</h3>
+
+      <!-- Date -->
+      <label>Select Date</label>
+      <input type="date" [min]="today" [(ngModel)]="booking.date" />
+
+      <!-- Guests -->
+      <label>Guests</label>
+      <input type="number" [(ngModel)]="booking.guests" min="50" />
+
+      <!-- Notes -->
+      <label>Notes</label>
+      <textarea [(ngModel)]="booking.notes" placeholder="Any special requirements..."></textarea>
+
+      <!-- Price -->
+      <div class="price-box">
+        <span>Total Price</span>
+        <strong>₹{{ hall.price }}</strong>
+      </div>
+
+      <!-- Button -->
+      <button (click)="bookNow()">Book Now</button>
+
+    </div>
 
   </div>
 
