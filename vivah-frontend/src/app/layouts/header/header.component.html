@@ -1,8 +1,11 @@
-<header class="header">
+<div class="header">
   <div class="logo">Vivah</div>
 
   <nav>
-    <a routerLink="/">Home</a>
-    <a routerLink="/halls">Halls</a>
+    @if (!auth.isLoggedIn()) {
+      <button class="login-btn" (click)="goToLogin()">Login</button>
+    } @else {
+      <button class="login-btn" (click)="logout()">Logout</button>
+    }
   </nav>
-</header>
+</div>

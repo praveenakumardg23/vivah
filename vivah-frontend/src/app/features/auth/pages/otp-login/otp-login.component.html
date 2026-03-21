@@ -1,0 +1,44 @@
+<div class="login-container">
+
+    <h2>Login</h2>
+
+    <!-- MOBILE STEP -->
+    @if (step === 'mobile') {
+    <div>
+
+        <label>Enter Mobile Number</label>
+        <input type="tel" [(ngModel)]="phone" placeholder="Enter mobile number" />
+
+        <button (click)="sendOtp()">Send OTP</button>
+
+    </div>
+    }
+
+    <!-- OTP STEP -->
+    @if (step === 'otp') {
+    <div>
+
+        <label>Enter OTP</label>
+        <input type="text" [(ngModel)]="otp" placeholder="Enter OTP" />
+
+        <button (click)="verifyOtp()">Verify OTP</button>
+
+        <!-- Timer -->
+        @if (timer > 0) {
+        <p>
+            Resend OTP in {{ timer }} sec
+        </p>
+        }
+
+        @if (timer === 0) {
+        <p class="resend" (click)="resendOtp()">
+            Resend OTP
+        </p>
+        }
+
+
+    </div>
+    }
+
+
+</div>
