@@ -1,4 +1,5 @@
-<div class="overlay" *ngIf="show">
+@if (show) {
+<div class="overlay">
 
   <div class="modal">
     <span class="close" (click)="close()">✕</span>
@@ -7,3 +8,4 @@
   </div>
 
 </div>
+}

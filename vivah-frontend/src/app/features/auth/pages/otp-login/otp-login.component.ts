@@ -1,6 +1,7 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { interval } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -21,7 +22,7 @@ export class OtpLoginComponent {
   timer = 30;
   interval: any;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef, private dialogRef: MatDialogRef<OtpLoginComponent>) {}
 
   ngOnDestroy() {
     if (this.interval) {
@@ -42,7 +43,7 @@ export class OtpLoginComponent {
     console.log('Verify OTP', this.otp);
 
     if (this.otp === '1234') {
-      alert('Login successful');
+      this.dialogRef.close(true);
     } else {
       alert('Invalid OTP');
     }
