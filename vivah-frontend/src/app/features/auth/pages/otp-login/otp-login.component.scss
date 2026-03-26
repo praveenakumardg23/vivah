@@ -43,3 +43,21 @@
     margin-top: 10px;
   }
 }
+
+.agent-link {
+  margin-top: 10px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.agent-link span {
+  color: #c62828;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.error {
+  color: red;
+  font-size: 13px;
+  margin-top: 5px;
+}

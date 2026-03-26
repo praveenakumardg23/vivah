@@ -9,7 +9,14 @@
         <label>Enter Mobile Number</label>
         <input type="tel" [(ngModel)]="phone" placeholder="Enter mobile number" />
 
-        <button (click)="sendOtp()">Send OTP</button>
+        <button (click)="sendOtp()" [disabled]="isLoading">
+            {{ isLoading ? 'Sending...' : 'Send OTP' }}
+        </button>
+
+        <p class="agent-link">
+            Are you an Agent / Owner?
+            <span (click)="goToPasswordLogin()">Login here</span>
+        </p>
 
     </div>
     }
@@ -21,7 +28,9 @@
         <label>Enter OTP</label>
         <input type="text" [(ngModel)]="otp" placeholder="Enter OTP" />
 
-        <button (click)="verifyOtp()">Verify OTP</button>
+        <button (click)="verifyOtp()" [disabled]="isVerifying">
+            {{ isVerifying ? 'Verifying...' : 'Verify OTP' }}
+        </button>
 
         <!-- Timer -->
         @if (timer > 0) {
@@ -38,6 +47,29 @@
 
 
     </div>
+    }
+
+    @if (step === 'password') {
+    <div>
+
+        <h2>Agent / Owner Login</h2>
+
+        <input type="email" placeholder="Enter email" [(ngModel)]="email" />
+
+        <input type="password" placeholder="Enter password" [(ngModel)]="password" />
+
+        <button (click)="loginWithPassword()">Login</button>
+
+        <p class="agent-link">
+            <span (click)="goToOtpLogin()">← Back to User Login</span>
+        </p>
+
+    </div>
+    }
+    @if (errorMessage) {
+    <p class="error">
+        {{ errorMessage }}
+    </p>
     }
 
 

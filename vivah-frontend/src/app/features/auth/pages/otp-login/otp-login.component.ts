@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { interval } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { AuthService } from '../../../../core/services/auth.service';
+import { TokenService } from '../../../../core/services/token.service';
 
 @Component({
   selector: 'app-otp-login',
@@ -14,15 +16,22 @@ import { take } from 'rxjs/operators';
 })
 export class OtpLoginComponent {
 
-  step: 'mobile' | 'otp' = 'mobile';
+  step: 'mobile' | 'otp' | 'password' = 'mobile';
 
   phone = '';
   otp = '';
 
+  email = '';
+  password = '';
+
   timer = 30;
   interval: any;
 
-  constructor(private cdr: ChangeDetectorRef, private dialogRef: MatDialogRef<OtpLoginComponent>) {}
+  errorMessage = '';
+  isLoading = false;
+  isVerifying = false;
+
+  constructor(private cdr: ChangeDetectorRef, private dialogRef: MatDialogRef<OtpLoginComponent>, private authService: AuthService, private tokenService: TokenService) {}
 
   ngOnDestroy() {
     if (this.interval) {
@@ -30,23 +39,91 @@ export class OtpLoginComponent {
     }
   }
 
+  isEmail(value: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  isPhone(value: string): boolean {
+    return /^[0-9]{10}$/.test(value);
+  }
+
+  loginWithPassword() {
+    if (!this.isEmail(this.email) || !this.password) return;
+
+    console.log('Login with email:', this.email);
+
+    // call API here
+    this.dialogRef.close(true);
+  }
+
   sendOtp() {
-    if (!this.phone) return;
+    if (!this.isPhone(this.phone)) {
+      this.errorMessage = 'Enter valid mobile number';
+      return;
+    }
+
+    this.errorMessage = '';
+    this.isLoading = true;
 
     console.log('Send OTP to', this.phone);
 
-    this.step = 'otp';
-    this.startTimer();
+    this.authService.sendOtp(this.phone).subscribe({
+      next: (res: any) => {
+        console.log(res.msg);
+
+        this.isLoading = false;
+
+        this.step = 'otp';
+        this.startTimer();
+      },
+
+      error: (err) => {
+        this.isLoading = false;
+
+        this.errorMessage =
+          err?.error?.msg || 'Failed to send OTP';
+      },
+
+      complete: () => {
+        console.log('OTP request completed');
+      }
+    });
   }
 
   verifyOtp() {
-    console.log('Verify OTP', this.otp);
-
-    if (this.otp === '1234') {
-      this.dialogRef.close(true);
-    } else {
-      alert('Invalid OTP');
+    if (!this.otp || this.otp.length < 4) {
+      this.errorMessage = 'Enter valid OTP';
+      return;
     }
+
+    this.isVerifying = true;
+    this.errorMessage = '';
+
+    this.authService.verifyOtp(this.phone, this.otp).subscribe({
+      next: (res: any) => {
+        this.isVerifying = false;
+
+        // 🔐 Store tokens
+        this.tokenService.setTokens(
+          res.token,
+          res.user?.refreshToken
+        );
+        this.tokenService.setRole(res.user?.role);
+
+        // ✅ Close modal
+        this.dialogRef.close(true);
+
+        // 🚀 Redirect
+        // this.redirectUser(res.role);
+      },
+
+      error: (err) => {
+        this.isVerifying = false;
+
+        this.errorMessage =
+          err?.error?.msg || 'Invalid OTP';
+      }
+    });
   }
 
   startTimer() {
@@ -65,5 +142,13 @@ export class OtpLoginComponent {
 
   resendOtp() {
     this.sendOtp();
+  }
+
+  goToPasswordLogin() {
+    this.step = 'password';
+  }
+
+  goToOtpLogin() {
+    this.step = 'mobile';
   }
 }
