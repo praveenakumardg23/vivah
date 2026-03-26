@@ -1,0 +1,56 @@
+<div class="navbar">
+
+    <!-- Left -->
+    <div class="logo" (click)="router.navigate(['/'])">
+        Vivah
+    </div>
+
+    <!-- Right -->
+    <div class="nav-right">
+
+        <!-- ❌ Not Logged In -->
+        @if (!(isLoggedIn$ | async)) {
+        <button class="login-btn" (click)="openLogin()">
+            Login
+        </button>
+        } @else {
+        <div class="profile" (click)="toggleDropdown($event)">
+
+            <div class="avatar">
+                👤
+            </div>
+
+            <div class="dropdown" *ngIf="isDropdownOpen">
+
+                <div class="item" (click)="goToProfile()">
+                    My Profile
+                </div>
+
+                <!-- USER -->
+                @if ((role$ | async) === 'USER') {
+                <div class="item" (click)="goToBookings()">
+                    My Bookings
+                </div>
+                }
+
+
+                <!-- OWNER -->
+                @if ((role$ | async) === 'OWNER') {
+                <div class="item" (click)="goToOwnerDashboard()">
+                    Manage Mantapas
+                </div>
+                }
+
+
+                <div class="item logout" (click)="logout()">
+                    Logout
+                </div>
+
+            </div>
+
+        </div>
+        }
+
+    </div>
+
+</div>

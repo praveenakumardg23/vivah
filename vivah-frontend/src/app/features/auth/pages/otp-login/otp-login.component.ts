@@ -109,6 +109,7 @@ export class OtpLoginComponent {
           res.user?.refreshToken
         );
         this.tokenService.setRole(res.user?.role);
+        this.tokenService.setUserDetails(res.user);
 
         // ✅ Close modal
         this.dialogRef.close(true);

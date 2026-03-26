@@ -9,10 +9,6 @@ export class AuthService {
 
   constructor(private api: ApiService) {}
 
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem('accessToken');
-  }
-
   sendOtp(phone: string) {
     return this.api.post(API_ENDPOINTS.AUTH.SEND_OTP, { phone });
   }

@@ -1,0 +1,72 @@
+import { Component, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { TokenService } from '../../core/services/token.service';
+import { MatDialog } from '@angular/material/dialog';
+import { OtpLoginComponent } from '../../features/auth/pages/otp-login/otp-login.component';
+
+@Component({
+  selector: 'app-navbar',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.scss'],
+})
+export class NavbarComponent {
+  isLoggedIn$: any;
+  role$: any;
+
+  isDropdownOpen = false;
+
+  constructor(
+    private tokenService: TokenService,
+    public router: Router,
+    private dialog: MatDialog,
+  ) {
+    this.isLoggedIn$ = this.tokenService.isLoggedIn$;
+    this.role$ = this.tokenService.roleObservable$;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event) {
+    const target = event.target as HTMLElement;
+
+    if (!target.closest('.profile')) {
+      this.isDropdownOpen = false;
+    }
+  }
+
+  toggleDropdown(event?: Event) {
+    event?.stopPropagation(); // 🔥 important
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  logout() {
+    this.tokenService.clearTokens();
+    this.router.navigate(['/']);
+  }
+
+  goToProfile() {
+    this.router.navigate(['/profile']);
+    this.isDropdownOpen = false;
+  }
+
+  goToBookings() {
+    this.router.navigate(['/my-bookings']);
+    this.isDropdownOpen = false;
+  }
+
+  goToOwnerDashboard() {
+    this.router.navigate(['/owner-dashboard']);
+    this.isDropdownOpen = false;
+  }
+
+  openLogin() {
+    this.dialog.open(OtpLoginComponent, {
+      width: '400px',
+      maxWidth: '90vw',
+      autoFocus: false,
+      panelClass: 'custom-dialog',
+    });
+  }
+}
