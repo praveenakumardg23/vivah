@@ -18,7 +18,7 @@ export class UserService {
     return this.api.post(API_ENDPOINTS.USER.SEND_EMAIL_OTP, { email });
   }
 
-  verifyEmailOtp(otp: string) {
-    return this.api.post(API_ENDPOINTS.USER.VERIFY_EMAIL_OTP, { otp });
+  verifyEmailOtp(data: any) {
+    return this.api.post(API_ENDPOINTS.USER.VERIFY_EMAIL_OTP, data);
   }
 }

@@ -78,7 +78,7 @@
               name="email"
               type="email"
               placeholder="Enter your email"
-              [disabled]="isEmailVerified"
+              [disabled]="isEmailVerified || showOtpInput"
               autocomplete="email"
             />
             <mat-icon matPrefix class="field-icon">mail_outline</mat-icon>

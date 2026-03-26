@@ -144,7 +144,7 @@ export class ProfileComponent implements OnInit {
     this.isVerifyingOtp = true;
     this.clearMessage();
 
-    this.userService.verifyEmailOtp(this.emailOtp.trim()).subscribe({
+    this.userService.verifyEmailOtp({otp: this.emailOtp?.trim(), email: this.email?.trim() }).subscribe({
       next: () => {
         this.isVerifyingOtp = false;
         this.isEmailVerified = true;
