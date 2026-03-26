@@ -88,6 +88,7 @@ export class ProfileComponent implements OnInit {
       error: () => {
         this.isLoadingProfile = false;
         this.showMessage('Failed to load profile. Please try again.', false);
+        this.cdr.detectChanges();
       },
     });
   }
@@ -104,10 +105,12 @@ export class ProfileComponent implements OnInit {
       next: () => {
         this.isLoading = false;
         this.showMessage('Profile updated successfully!', true);
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isLoading = false;
         this.showMessage('Failed to save changes. Please try again.', false);
+        this.cdr.detectChanges();
       },
     });
   }
@@ -125,10 +128,12 @@ export class ProfileComponent implements OnInit {
         this.isSendingOtp = false;
         this.showOtpInput = true;
         this.emailOtp = '';
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isSendingOtp = false;
         this.showMessage('Failed to send OTP. Check your email address.', false);
+        this.cdr.detectChanges();
       },
     });
   }
@@ -146,10 +151,12 @@ export class ProfileComponent implements OnInit {
         this.showOtpInput = false;
         this.emailOtp = '';
         this.showMessage('Email verified successfully!', true);
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isVerifyingOtp = false;
         this.showMessage('Incorrect OTP. Please try again.', false);
+        this.cdr.detectChanges();
       },
     });
   }

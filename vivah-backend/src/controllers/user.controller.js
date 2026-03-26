@@ -14,11 +14,11 @@ export const getProfile = async (req, res) => {
 // UPDATE PROFILE
 export const updateProfile = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, email, isEmailVerified } = req.body;
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { name },
+      { name, email, isEmailVerified },
       { new: true }
     );
 
