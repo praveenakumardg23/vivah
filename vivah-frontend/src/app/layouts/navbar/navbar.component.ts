@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { TokenService } from '../../core/services/token.service';
 import { MatDialog } from '@angular/material/dialog';
 import { OtpLoginComponent } from '../../features/auth/pages/otp-login/otp-login.component';
+import { ProfileComponent } from '../../features/auth/pages/profile/profile.component';
 
 @Component({
   selector: 'app-navbar',
@@ -47,7 +48,13 @@ export class NavbarComponent {
   }
 
   goToProfile() {
-    this.router.navigate(['/profile']);
+    // this.router.navigate(['/profile']);
+    this.dialog.open(ProfileComponent, {
+      width: '400px',
+      maxWidth: '90vw',
+      autoFocus: false,
+      panelClass: 'custom-dialog',
+    });
     this.isDropdownOpen = false;
   }
 

@@ -12,7 +12,9 @@ export const API_ENDPOINTS = {
   },
 
   USER: {
-    PROFILE: `${API_BASE}/user/profile`
+    PROFILE: `${API_BASE}/user/profile`,
+    SEND_EMAIL_OTP: `${API_BASE}/user/email/send-otp`,
+    VERIFY_EMAIL_OTP: `${API_BASE}/user/email/verify-otp`,
   },
 
   MANTAPA: {

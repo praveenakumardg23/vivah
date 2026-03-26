@@ -1,0 +1,30 @@
+.profile-container {
+  max-width: 400px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  background: #001348;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+}
+
+.message {
+  font-size: 13px;
+}
+
+.verified {
+  color: green;
+  font-size: 13px;
+}

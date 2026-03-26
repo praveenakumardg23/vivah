@@ -53,7 +53,7 @@ export const authInterceptor: HttpInterceptorFn = (
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
 
-      if (error.status === 401) {
+      if (error.status === 401 || error.status === 403) {
         return handle401Error(authReq, next, tokenService, authService);
       }
 

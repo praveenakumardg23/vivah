@@ -7,7 +7,17 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  email: String,
+  email: {
+    type: String,
+    unique: true,
+    sparse: true // 🔥 allows null values
+  },
+  isEmailVerified: {
+    type: Boolean,
+    default: false
+  },
+  emailOtp: String,
+  emailOtpExpiry: Date,
   password: String,
   refreshToken: String,
   role: {

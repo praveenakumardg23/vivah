@@ -1,0 +1,47 @@
+<div class="profile-container">
+
+    <h2>My Profile</h2>
+
+    <!-- Name -->
+    <label>Name</label>
+    <input [(ngModel)]="name" placeholder="Enter name (optional)" />
+
+    <!-- Phone -->
+    <label>Phone</label>
+    <input [(ngModel)]="phone" disabled />
+
+    <!-- Email -->
+    <label>Email</label>
+    <input [(ngModel)]="email" placeholder="Enter email (optional)" />
+
+    @if (email && !isEmailVerified) {
+    <button (click)="sendEmailOtp()">
+        Verify Email
+    </button>
+    }
+
+    @if (isEmailVerified) {
+    <span class="verified">
+        ✅ Verified
+    </span>
+    }
+
+    <!-- OTP Input -->
+    @if (showOtpInput) {
+    <div>
+        <input [(ngModel)]="emailOtp" placeholder="Enter OTP" />
+        <button (click)="verifyEmailOtp()">Verify OTP</button>
+    </div>
+    }
+
+    <button (click)="updateProfile()" [disabled]="isLoading">
+        {{ isLoading ? 'Saving...' : 'Save Changes' }}
+    </button>
+
+    @if (message) {
+    <p class="message">
+        {{ message }}
+    </p>
+    }
+
+</div>
