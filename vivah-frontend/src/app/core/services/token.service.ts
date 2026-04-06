@@ -1,11 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class TokenService {
-
   private loggedIn$ = new BehaviorSubject<boolean>(this.hasToken());
   isLoggedIn$ = this.loggedIn$.asObservable();
 
@@ -23,7 +20,7 @@ export class TokenService {
   setTokens(accessToken: string, refreshToken: string) {
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
-    this.loggedIn$.next(true); // 🔥 notify app
+    this.loggedIn$.next(true);
   }
 
   clearTokens() {
@@ -37,15 +34,20 @@ export class TokenService {
     this.role$.next(role);
   }
 
+  getRole(): string | null {
+    return localStorage.getItem('role');
+  }
+
   setUserDetails(user: any) {
     localStorage.setItem('user', JSON.stringify(user));
   }
 
-  hasToken(): boolean {
-    return !!localStorage.getItem('accessToken');
+  getUserDetails(): any {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
   }
 
-  private getRole(): string | null {
-    return localStorage.getItem('role');
+  hasToken(): boolean {
+    return !!localStorage.getItem('accessToken');
   }
 }

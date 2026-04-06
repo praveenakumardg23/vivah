@@ -1,0 +1,114 @@
+.home {
+  padding: 16px;
+  background: #f9f9f9;
+  display: block;
+  width: 100%;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 32px 16px;
+  background: linear-gradient(135deg, #b71c1c 0%, #e53935 100%);
+  border-radius: 16px;
+  color: white;
+
+  h1 { font-size: 24px; margin: 0 0 8px; font-weight: 700; }
+  p { margin: 0; opacity: .9; font-size: 15px; }
+}
+
+.search-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+
+  select, input, button {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1.5px solid #ddd;
+    font-size: 14px;
+  }
+
+  button {
+    background: #b71c1c;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background .2s;
+
+    &:hover { background: #8e0000; }
+  }
+}
+
+.categories {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+
+  .category {
+    flex-shrink: 0;
+    background: white;
+    padding: 12px 16px;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,.08);
+    cursor: pointer;
+    transition: box-shadow .2s;
+
+    &:hover { box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+  }
+}
+
+.featured h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.hall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.loader-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 60px;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top-color: #b71c1c;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: #888;
+
+  span { font-size: 48px; display: block; margin-bottom: 12px; }
+  p { font-size: 16px; margin: 0; }
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .search-box {
+    flex-direction: row;
+
+    select, input { flex: 1; }
+    button { max-width: 150px; }
+  }
+}

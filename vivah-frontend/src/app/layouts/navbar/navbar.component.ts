@@ -11,18 +11,17 @@ import { ProfileComponent } from '../../features/auth/pages/profile/profile.comp
   standalone: true,
   imports: [CommonModule],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss'],
+  styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
   isLoggedIn$: any;
   role$: any;
-
   isDropdownOpen = false;
 
   constructor(
     private tokenService: TokenService,
     public router: Router,
-    private dialog: MatDialog,
+    private dialog: MatDialog
   ) {
     this.isLoggedIn$ = this.tokenService.isLoggedIn$;
     this.role$ = this.tokenService.roleObservable$;
@@ -31,29 +30,37 @@ export class NavbarComponent {
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     const target = event.target as HTMLElement;
-
     if (!target.closest('.profile')) {
       this.isDropdownOpen = false;
     }
   }
 
   toggleDropdown(event?: Event) {
-    event?.stopPropagation(); // 🔥 important
+    event?.stopPropagation();
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
   logout() {
     this.tokenService.clearTokens();
     this.router.navigate(['/']);
+    this.isDropdownOpen = false;
+  }
+
+  openLogin() {
+    this.dialog.open(OtpLoginComponent, {
+      width: '400px',
+      maxWidth: '90vw',
+      autoFocus: false,
+      panelClass: 'custom-dialog'
+    });
   }
 
   goToProfile() {
-    // this.router.navigate(['/profile']);
     this.dialog.open(ProfileComponent, {
       width: '400px',
       maxWidth: '90vw',
       autoFocus: false,
-      panelClass: 'custom-dialog',
+      panelClass: 'custom-dialog'
     });
     this.isDropdownOpen = false;
   }
@@ -68,12 +75,13 @@ export class NavbarComponent {
     this.isDropdownOpen = false;
   }
 
-  openLogin() {
-    this.dialog.open(OtpLoginComponent, {
-      width: '400px',
-      maxWidth: '90vw',
-      autoFocus: false,
-      panelClass: 'custom-dialog',
-    });
+  goToAgentDashboard() {
+    this.router.navigate(['/agent-dashboard']);
+    this.isDropdownOpen = false;
+  }
+
+  goToAdminDashboard() {
+    this.router.navigate(['/admin-dashboard']);
+    this.isDropdownOpen = false;
   }
 }

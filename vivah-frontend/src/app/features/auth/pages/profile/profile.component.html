@@ -1,191 +1,74 @@
-<div class="profile-dialog">
+<div class="profile-container">
 
   <!-- Header -->
   <div class="profile-header">
-    <div class="avatar-ring">
-      <div class="avatar-inner">
-        <span class="avatar-icon">👤</span>
-        <div class="avatar-glow"></div>
-      </div>
-    </div>
-
+    <div class="avatar-circle">{{ (name || phone || '?')[0].toUpperCase() }}</div>
     <div class="header-text">
-      <h2 class="dialog-title">My Profile</h2>
-      <p class="dialog-subtitle">{{ phone || 'Manage your account' }}</p>
+      <h2>My Profile</h2>
+      <span class="role-badge">{{ roleLabel }}</span>
     </div>
-
-    <button mat-icon-button mat-dialog-close class="close-btn" aria-label="Close">
-      <mat-icon>close</mat-icon>
-    </button>
+    <!-- Close button when opened as dialog -->
+    <button class="close-btn" *ngIf="isInDialog" (click)="closeDialog()">✕</button>
   </div>
 
-  <!-- Divider -->
-  <mat-divider></mat-divider>
+  <!-- Alert -->
+  @if (message) {
+    <div class="alert" [class.alert-success]="messageType === 'success'" [class.alert-error]="messageType === 'error'">
+      {{ message }}
+    </div>
+  }
 
-  <!-- Content -->
-  <mat-dialog-content class="profile-content">
+  <!-- Name -->
+  <div class="form-group">
+    <label>Full Name</label>
+    <input type="text" [(ngModel)]="name" placeholder="Enter your name" />
+  </div>
 
-    <!-- Loading Skeleton -->
-    @if (isLoadingProfile) {
-      <div class="skeleton-wrapper">
-        <div class="skeleton skeleton-field"></div>
-        <div class="skeleton skeleton-field"></div>
-        <div class="skeleton skeleton-field short"></div>
-      </div>
-    }
+  <!-- Phone (read-only) -->
+  <div class="form-group">
+    <label>Mobile Number</label>
+    <div class="readonly-field">
+      <span>{{ phone }}</span>
+      <span class="verified-chip">✓ Verified</span>
+    </div>
+  </div>
 
-    <!-- Form -->
-    @if (!isLoadingProfile) {
-      <form class="profile-form" #profileForm="ngForm" (ngSubmit)="updateProfile()">
-
-        <!-- Name Field -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Full Name</mat-label>
-          <input
-            matInput
-            [(ngModel)]="name"
-            name="name"
-            placeholder="Enter your full name"
-            maxlength="60"
-            autocomplete="name"
-          />
-          <mat-icon matPrefix class="field-icon">person_outline</mat-icon>
-          <mat-hint align="end">{{ name.length || 0 }}/60</mat-hint>
-        </mat-form-field>
-
-        <!-- Phone Field (Read-only) -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Mobile Number</mat-label>
-          <input
-            matInput
-            [(ngModel)]="phone"
-            name="phone"
-            [disabled]="true"
-            autocomplete="tel"
-          />
-          <mat-icon matPrefix class="field-icon">phone_iphone</mat-icon>
-          <mat-hint>Verified via OTP · Cannot be changed</mat-hint>
-        </mat-form-field>
-
-        <!-- Email Section -->
-        <div class="email-section">
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Email Address</mat-label>
-            <input
-              matInput
-              [(ngModel)]="email"
-              name="email"
-              type="email"
-              placeholder="Enter your email"
-              [disabled]="isEmailVerified || showOtpInput"
-              autocomplete="email"
-            />
-            <mat-icon matPrefix class="field-icon">mail_outline</mat-icon>
-
-            <!-- Verified Badge -->
-            @if (isEmailVerified) {
-              <span matSuffix class="verified-badge">
-                <mat-icon class="verified-icon">verified</mat-icon>
-                Verified
-              </span>
-            }
-          </mat-form-field>
-
-          <!-- Verify Email Button -->
-          @if (email && !isEmailVerified && !showOtpInput) {
-            <button
-              mat-stroked-button
-              type="button"
-              class="verify-btn"
-              (click)="sendEmailOtp()"
-              [disabled]="isSendingOtp"
-            >
-              @if (isSendingOtp) {
-                <mat-spinner diameter="16"></mat-spinner>
-              } @else {
-                <mat-icon>send</mat-icon>
-              }
-              {{ isSendingOtp ? 'Sending…' : 'Verify Email' }}
-            </button>
-          }
-
-          <!-- OTP Input -->
-          @if (showOtpInput) {
-            <div class="otp-row" [@slideIn]>
-
-              <mat-form-field appearance="outline" class="otp-field">
-                <mat-label>Enter OTP</mat-label>
-                <input
-                  matInput
-                  [(ngModel)]="emailOtp"
-                  name="emailOtp"
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="6"
-                  placeholder="6-digit code"
-                  autocomplete="one-time-code"
-                />
-                <mat-icon matPrefix class="field-icon">lock_outline</mat-icon>
-              </mat-form-field>
-
-              <button
-                mat-flat-button
-                type="button"
-                class="confirm-otp-btn"
-                (click)="verifyEmailOtp()"
-                [disabled]="isVerifyingOtp || !emailOtp"
-              >
-                @if (isVerifyingOtp) {
-                  <mat-spinner diameter="16"></mat-spinner>
-                } @else {
-                  Confirm
-                }
-              </button>
-
-            </div>
-
-            <p class="otp-hint">Check your inbox · <span class="resend-link" (click)="sendEmailOtp()">Resend OTP</span></p>
-          }
-
-        </div>
-
-        <!-- Success / Error Message -->
-        @if (message) {
-          <div class="status-message" [class.success]="isSuccess" [class.error]="!isSuccess">
-            <mat-icon>{{ isSuccess ? 'check_circle_outline' : 'error_outline' }}</mat-icon>
-            <span>{{ message }}</span>
-          </div>
-        }
-
-      </form>
-    }
-
-  </mat-dialog-content>
-
-  <!-- Actions -->
-  <mat-divider></mat-divider>
-
-  <mat-dialog-actions class="profile-actions">
-
-    <button mat-button mat-dialog-close class="cancel-btn">
-      Cancel
-    </button>
-
-    <button
-      mat-flat-button
-      class="save-btn"
-      (click)="updateProfile()"
-      [disabled]="isLoading || isLoadingProfile"
-    >
-      @if (isLoading) {
-        <mat-spinner diameter="18"></mat-spinner>
-      } @else {
-        <mat-icon>save</mat-icon>
+  <!-- Email -->
+  <div class="form-group">
+    <label>Email Address</label>
+    <div class="email-row">
+      <input
+        type="email"
+        [(ngModel)]="email"
+        placeholder="Enter your email"
+        [disabled]="isEmailVerified" />
+      @if (isEmailVerified) {
+        <span class="verified-chip">✓ Verified</span>
+      } @else if (email) {
+        <button class="btn-verify-email" (click)="sendEmailOtp()" [disabled]="isSendingOtp">
+          {{ isSendingOtp ? 'Sending...' : 'Verify' }}
+        </button>
       }
-      {{ isLoading ? 'Saving…' : 'Save Changes' }}
-    </button>
+    </div>
+  </div>
 
-  </mat-dialog-actions>
+  <!-- Email OTP input -->
+  @if (showOtpInput) {
+    <div class="form-group otp-group">
+      <label>Enter Email OTP</label>
+      <div class="otp-row">
+        <input type="text" [(ngModel)]="emailOtp" placeholder="6-digit OTP" maxlength="6" />
+        <button class="btn-confirm-otp" (click)="verifyEmailOtp()" [disabled]="isVerifyingOtp">
+          {{ isVerifyingOtp ? '...' : 'Confirm' }}
+        </button>
+      </div>
+      <p class="otp-hint">Check your inbox at {{ email }}</p>
+    </div>
+  }
+
+  <!-- Save -->
+  <button class="btn-primary" (click)="updateProfile()" [disabled]="isLoading">
+    {{ isLoading ? 'Saving...' : 'Save Changes' }}
+  </button>
 
 </div>

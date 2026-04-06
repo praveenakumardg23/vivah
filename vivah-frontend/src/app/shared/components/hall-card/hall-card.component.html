@@ -1,13 +1,32 @@
-<div class="hall-card">
+<div class="hall-card" (click)="viewDetails()">
 
-  <img [src]="hall?.image" alt="hall" />
+  <div class="card-image">
+    <img
+      [src]="hall.images[0] || 'https://via.placeholder.com/400x200?text=No+Image'"
+      [alt]="hall.name" />
+    <div class="capacity-badge" *ngIf="hall.capacity">
+      👥 {{ hall.capacity }}
+    </div>
+  </div>
 
   <div class="info">
-    <h3>{{ hall?.name }}</h3>
-    <p class="location">📍 {{ hall?.location }}</p>
-    <p class="price">₹{{ hall?.price }}</p>
+    <h3>{{ hall.name }}</h3>
+    <p class="location">📍 {{ hall.location }}, {{ hall.city }}</p>
 
-    <button (click)="viewDetails()">View Details</button>
+    <div class="amenities" *ngIf="hall.amenities.length">
+      <span *ngFor="let a of hall.amenities | slice:0:2" class="pill">{{ a }}</span>
+      <span *ngIf="hall.amenities.length > 2" class="pill more">
+        +{{ hall.amenities.length - 2 }}
+      </span>
+    </div>
+
+    <div class="card-footer">
+      <div class="price">
+        <span class="price-num">₹{{ hall.price | number }}</span>
+        <span class="price-day">/day</span>
+      </div>
+      <button (click)="viewDetails(); $event.stopPropagation()">View Details</button>
+    </div>
   </div>
 
 </div>

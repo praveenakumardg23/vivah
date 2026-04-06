@@ -9,12 +9,12 @@
   <!-- Search Box -->
   <div class="search-box">
     <select [(ngModel)]="selectedLocation">
-      <option *ngFor="let loc of locations">{{ loc }}</option>
+      <option *ngFor="let loc of locations" [value]="loc">{{ loc }}</option>
     </select>
 
-    <input type="date" />
+    <input type="date" [min]="today" [(ngModel)]="selectedDate" />
 
-    <button (click)="search()">Search</button>
+    <button (click)="search()">🔍 Search</button>
   </div>
 
   <!-- Categories -->
@@ -26,10 +26,22 @@
 
   <!-- Featured Halls -->
   <div class="featured">
-    <h2>Featured Venues</h2>
+    <h2>Available Venues</h2>
 
-    <div class="hall-grid">
-      <app-hall-card 
+    <!-- Loading -->
+    <div class="loader-wrap" *ngIf="isLoading">
+      <div class="loader"></div>
+    </div>
+
+    <!-- No Results -->
+    <div class="empty-results" *ngIf="!isLoading && featuredHalls.length === 0">
+      <span>🏛️</span>
+      <p>No halls found. Try a different city or date.</p>
+    </div>
+
+    <!-- Hall Grid -->
+    <div class="hall-grid" *ngIf="!isLoading">
+      <app-hall-card
         *ngFor="let hall of featuredHalls"
         [hall]="hall">
       </app-hall-card>

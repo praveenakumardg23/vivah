@@ -1,10 +1,19 @@
-/**
- * Ionic Dark Theme
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+/* Vivah — Ionic CSS Variables
+   Only light theme used; dark mode disabled intentionally. */
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+:root {
+  --ion-color-primary: #b71c1c;
+  --ion-color-primary-rgb: 183, 28, 28;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-shade: #a01919;
+  --ion-color-primary-tint: #be3333;
+
+  --ion-color-secondary: #e53935;
+  --ion-color-secondary-rgb: 229, 57, 53;
+  --ion-color-secondary-contrast: #ffffff;
+
+  --ion-background-color: #f5f5f5;
+  --ion-text-color: #1a1a1a;
+
+  --ion-font-family: 'Roboto', sans-serif;
+}

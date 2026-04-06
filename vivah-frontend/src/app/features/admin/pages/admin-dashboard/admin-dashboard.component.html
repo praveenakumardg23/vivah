@@ -1,0 +1,141 @@
+<div class="dashboard">
+
+  <div class="dash-header">
+    <div>
+      <h1>Admin Dashboard</h1>
+      <p>Manage all users, agents, and platform data</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-icon">👥</span>
+      <div>
+        <div class="stat-num">{{ stats().total }}</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">🙋</span>
+      <div>
+        <div class="stat-num">{{ stats().users }}</div>
+        <div class="stat-label">Regular Users</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">🏛️</span>
+      <div>
+        <div class="stat-num">{{ stats().owners }}</div>
+        <div class="stat-label">Owners</div>
+      </div>
+    </div>
+    <div class="stat-card accent">
+      <span class="stat-icon">🤝</span>
+      <div>
+        <div class="stat-num">{{ stats().agents }}</div>
+        <div class="stat-label">Agents</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button [class.active]="activeTab === 'users'" (click)="setTab('users')">
+      👥 All Users
+    </button>
+    <button [class.active]="activeTab === 'agents'" (click)="setTab('agents')">
+      🤝 Agents
+    </button>
+    <button [class.active]="activeTab === 'register-agent'" (click)="setTab('register-agent')">
+      ➕ Register Agent
+    </button>
+  </div>
+
+  <!-- TAB: ALL USERS -->
+  @if (activeTab === 'users') {
+    <div *ngIf="isLoading" class="loader-wrap"><div class="loader"></div></div>
+
+    <div class="table-wrap" *ngIf="!isLoading">
+      <div *ngIf="users.length === 0" class="empty-state">No users found.</div>
+
+      <div class="user-row" *ngFor="let user of users">
+        <div class="user-avatar">
+          @if (user.role === 'ADMIN') { 🛡️ }
+          @else if (user.role === 'AGENT') { 🤝 }
+          @else if (user.role === 'OWNER') { 🏛️ }
+          @else { 👤 }
+        </div>
+        <div class="user-info">
+          <div class="user-name">{{ user.name || 'Unnamed User' }}</div>
+          <div class="user-phone">📞 {{ user.phone }}</div>
+          <div class="user-email" *ngIf="user.email">
+            ✉️ {{ user.email }}
+            <span *ngIf="user.isEmailVerified" class="verified-tag">✓ Verified</span>
+          </div>
+          <div class="user-joined">Joined {{ user.createdAt | date:'mediumDate' }}</div>
+        </div>
+        <div class="user-role-controls">
+          <span class="role-badge" [class]="roleColor(user.role)">{{ user.role }}</span>
+          <select
+            [ngModel]="user.role"
+            (ngModelChange)="updateRole(user, $event)"
+            [disabled]="updatingRoleId === user._id"
+            class="role-select">
+            <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- TAB: AGENTS -->
+  @if (activeTab === 'agents') {
+    <div *ngIf="agents.length === 0" class="empty-state">
+      No agents registered yet.
+    </div>
+
+    <div class="user-row" *ngFor="let agent of agents">
+      <div class="user-avatar">🤝</div>
+      <div class="user-info">
+        <div class="user-name">{{ agent.name || 'Unnamed Agent' }}</div>
+        <div class="user-phone">📞 {{ agent.phone }}</div>
+        <div class="user-email" *ngIf="agent.email">✉️ {{ agent.email }}</div>
+        <div class="user-joined">Since {{ agent.createdAt | date:'mediumDate' }}</div>
+      </div>
+      <span class="role-badge role-agent">AGENT</span>
+    </div>
+  }
+
+  <!-- TAB: REGISTER AGENT -->
+  @if (activeTab === 'register-agent') {
+    <div class="form-card">
+      <h2>Register New Agent</h2>
+      <p>Enter the agent's phone number. They can log in via OTP once registered.</p>
+
+      <label>Phone Number *</label>
+      <input
+        type="tel"
+        [(ngModel)]="agentPhone"
+        placeholder="10-digit mobile number" />
+
+      <label>Full Name (optional)</label>
+      <input
+        type="text"
+        [(ngModel)]="agentName"
+        placeholder="Agent's name" />
+
+      <button
+        class="btn-primary"
+        (click)="registerAgent()"
+        [disabled]="agentSubmitting">
+        {{ agentSubmitting ? 'Registering...' : 'Register Agent' }}
+      </button>
+
+      <p *ngIf="agentMsg" class="form-msg" [class.error-msg]="agentMsg.startsWith('❌')">
+        {{ agentMsg }}
+      </p>
+    </div>
+  }
+
+</div>

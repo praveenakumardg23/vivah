@@ -1,15 +1,19 @@
-import User from "../models/user.model.js";
-import { sendOtpEmail } from "../services/email.service.js";
+import User from '../models/user.model.js';
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
 
-const generateOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-};
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
+  }
+});
 
 // GET PROFILE
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-refreshToken");
-
+    const user = await User.findById(req.user.id).select('-refreshToken -password -otp -otpExpiry -emailOtp -emailOtpExpiry');
     res.json(user);
   } catch (error) {
     res.status(500).json({ msg: error.message });
@@ -19,13 +23,12 @@ export const getProfile = async (req, res) => {
 // UPDATE PROFILE
 export const updateProfile = async (req, res) => {
   try {
-    const { name, email, isEmailVerified } = req.body;
-
+    const { name } = req.body;
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { name, email, isEmailVerified },
-      { returnDocument: "after" },
-    );
+      { name },
+      { new: true }
+    ).select('-refreshToken -password');
 
     res.json(user);
   } catch (error) {
@@ -33,52 +36,61 @@ export const updateProfile = async (req, res) => {
   }
 };
 
+// SEND EMAIL OTP
 export const sendEmailOtp = async (req, res) => {
-  const { email } = req.body;
+  try {
+    const { email } = req.body;
 
-  const user = await User.findByIdAndUpdate(
-    req.user.id,
-    { email, isEmailVerified: false },
-    { returnDocument: "after" },
-  );
+    // Check if email is already taken by another user
+    const existing = await User.findOne({ email, _id: { $ne: req.user.id } });
+    if (existing) {
+      return res.status(400).json({ msg: 'Email already in use' });
+    }
 
-  if (!user) {
-    user = await User.create({ email });
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+    await User.findByIdAndUpdate(req.user.id, {
+      email,
+      emailOtp: otp,
+      emailOtpExpiry: expiry,
+      isEmailVerified: false
+    });
+
+    await transporter.sendMail({
+      from: process.env.MAIL_USER,
+      to: email,
+      subject: 'Vivah - Email Verification OTP',
+      html: `<p>Your OTP is <strong>${otp}</strong>. Valid for 10 minutes.</p>`
+    });
+
+    res.json({ msg: 'OTP sent to email' });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
   }
-
-  const otp = generateOTP();
-
-  user.emailOtp = otp;
-  user.emailOtpExpiry = Date.now() + 5 * 60 * 1000; // 5 min
-
-  await user.save();
-
-  await sendOtpEmail(email, otp);
-
-  res.json({ message: "OTP sent to email" });
 };
 
+// VERIFY EMAIL OTP
 export const verifyEmailOtp = async (req, res) => {
-  const { email, otp } = req.body;
+  try {
+    const { otp } = req.body;
+    const user = await User.findById(req.user.id);
 
-  console.log("email " + email);
-  console.log("otp " + otp);
+    if (!user.emailOtp || user.emailOtp !== otp) {
+      return res.status(400).json({ msg: 'Invalid OTP' });
+    }
 
-  const user = await User.findOne({
-    email,
-    emailOtp: otp,
-    emailOtpExpiry: { $gt: Date.now() },
-  });
+    if (new Date() > user.emailOtpExpiry) {
+      return res.status(400).json({ msg: 'OTP expired' });
+    }
 
-  if (!user) {
-    return res.status(400).json({ message: "Invalid or expired OTP" });
+    user.isEmailVerified = true;
+    user.emailOtp = undefined;
+    user.emailOtpExpiry = undefined;
+    await user.save();
+
+    res.json({ msg: 'Email verified' });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
   }
-
-  user.isEmailVerified = true;
-  user.emailOtp = undefined;
-  user.emailOtpExpiry = undefined;
-
-  await user.save();
-
-  res.json({ message: "Email verified successfully" });
 };

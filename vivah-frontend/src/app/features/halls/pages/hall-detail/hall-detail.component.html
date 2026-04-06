@@ -1,0 +1,143 @@
+<!-- Loading -->
+<div class="loader-full" *ngIf="isLoading">
+  <div class="loader"></div>
+</div>
+
+<!-- Not Found -->
+<div class="not-found" *ngIf="notFound && !isLoading">
+  <span>🏛️</span>
+  <h2>Hall not found</h2>
+  <p>This venue may have been removed.</p>
+  <button class="btn-back" (click)="goBack()">← Back to Home</button>
+</div>
+
+<!-- Hall Detail -->
+<div class="detail-container" *ngIf="hall && !isLoading">
+
+  <!-- Back -->
+  <button class="btn-back" (click)="goBack()">← Back</button>
+
+  <!-- Image Slider -->
+  <div class="banner">
+    <div class="slider"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)">
+
+      <img
+        [src]="hall.images[currentIndex] || 'https://via.placeholder.com/800x300?text=No+Image'"
+        [alt]="hall.name"
+        (click)="openFullscreen(currentIndex)" />
+
+      <button class="prev" (click)="prev()" *ngIf="hall.images.length > 1">❮</button>
+      <button class="next" (click)="next()" *ngIf="hall.images.length > 1">❯</button>
+
+      <div class="dots" *ngIf="hall.images.length > 1">
+        <span
+          *ngFor="let img of hall.images; let i = index"
+          [class.active]="i === currentIndex"
+          (click)="currentIndex = i">
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Grid -->
+  <div class="content-grid">
+
+    <!-- Left: Hall Info -->
+    <div class="hall-info">
+
+      <!-- Title & Location -->
+      <div class="hall-title-row">
+        <div>
+          <h1>{{ hall.name }}</h1>
+          <p class="location">📍 {{ hall.location }}, {{ hall.city }}</p>
+        </div>
+        <div class="price-tag">₹{{ hall.price | number }}<span>/day</span></div>
+      </div>
+
+      <!-- Info Grid -->
+      <div class="info-chips">
+        <div class="chip">👥 Up to {{ hall.capacity }} guests</div>
+        <div class="chip">📍 {{ hall.city }}</div>
+        <div class="chip" *ngIf="hall.owner.name">🔑 {{ hall.owner.name }}</div>
+        <div class="chip chip-active" *ngIf="hall.isActive">✅ Available</div>
+      </div>
+
+      <!-- Amenities -->
+      <div class="section" *ngIf="hall.amenities.length">
+        <h3>Amenities</h3>
+        <div class="amenity-tags">
+          <span class="amenity-tag" *ngFor="let item of hall.amenities">
+            ✔ {{ item }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="section" *ngIf="hall.description">
+        <h3>About This Venue</h3>
+        <p class="description-text">
+          {{
+            showFullDescription
+              ? hall.description
+              : (hall.description | slice:0:200) + (hall.description.length > 200 ? '...' : '')
+          }}
+        </p>
+        <span
+          class="toggle-desc"
+          *ngIf="hall.description.length > 200"
+          (click)="toggleDescription()">
+          {{ showFullDescription ? 'Read less ▲' : 'Read more ▼' }}
+        </span>
+      </div>
+
+      <!-- Blocked Dates Info -->
+      <div class="section" *ngIf="hall.blockedDates.length">
+        <h3>Unavailable Dates</h3>
+        <div class="blocked-dates-list">
+          <span class="blocked-date" *ngFor="let d of hall.blockedDates">
+            📅 {{ d | date:'mediumDate' }}
+          </span>
+        </div>
+        <p class="blocked-note">These dates are already booked or blocked by the owner.</p>
+      </div>
+
+    </div>
+
+    <!-- Right: Booking Form -->
+    <div class="booking-sidebar">
+      <!-- Booking Success Banner -->
+      <div class="success-banner" *ngIf="bookingSuccess">
+        🎉 Booking request sent! The owner will confirm shortly.
+      </div>
+
+      <app-booking-form
+        [hallId]="hall._id"
+        [hallPrice]="hall.price"
+        [hallCapacity]="hall.capacity"
+        (bookingCreated)="onBookingCreated()">
+      </app-booking-form>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Fullscreen Lightbox -->
+@if (isFullscreen && hall) {
+  <div
+    class="fullscreen"
+    (touchstart)="onTouchStart($event)"
+    (touchend)="onTouchEnd($event)">
+
+    <span class="close" (click)="closeFullscreen()">✕</span>
+
+    <img [src]="hall.images[currentIndex]" [alt]="hall.name" />
+
+    <button class="prev" (click)="prev()">❮</button>
+    <button class="next" (click)="next()">❯</button>
+
+    <div class="image-counter">{{ currentIndex + 1 }} / {{ hall.images.length }}</div>
+  </div>
+}

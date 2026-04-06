@@ -1,0 +1,87 @@
+<div class="hall-list-page">
+
+  <div class="page-header">
+    <h1>Browse All Venues</h1>
+    <p>Find the perfect hall for your special day</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <input
+      type="text"
+      [(ngModel)]="searchCity"
+      placeholder="🏙️ City or location..."
+      (keyup.enter)="search()" />
+
+    <input
+      type="date"
+      [min]="today"
+      [(ngModel)]="searchDate" />
+
+    <select [(ngModel)]="sortBy" (ngModelChange)="applySort()">
+      <option value="price-asc">Price: Low to High</option>
+      <option value="price-desc">Price: High to Low</option>
+      <option value="capacity">Capacity</option>
+    </select>
+
+    <button class="btn-search" (click)="search()">Search</button>
+    <button class="btn-clear" (click)="clearFilters()" *ngIf="searchCity || searchDate">
+      Clear
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loader-wrap" *ngIf="isLoading">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Empty -->
+  <div class="empty-state" *ngIf="!isLoading && filteredHalls.length === 0">
+    <span>🏛️</span>
+    <h3>No venues found</h3>
+    <p>Try adjusting your search filters</p>
+    <button class="btn-clear" (click)="clearFilters()">Show All</button>
+  </div>
+
+  <!-- Results count -->
+  <div class="results-count" *ngIf="!isLoading && filteredHalls.length > 0">
+    {{ filteredHalls.length }} venue{{ filteredHalls.length !== 1 ? 's' : '' }} found
+  </div>
+
+  <!-- Grid -->
+  <div class="halls-grid" *ngIf="!isLoading">
+    <div class="hall-card" *ngFor="let hall of filteredHalls" (click)="viewHall(hall)">
+
+      <div class="card-image">
+        <img
+          [src]="hall.images[0] || 'https://via.placeholder.com/400x220?text=No+Image'"
+          [alt]="hall.name" />
+        <div class="card-capacity">👥 {{ hall.capacity }}</div>
+      </div>
+
+      <div class="card-body">
+        <h3>{{ hall.name }}</h3>
+        <p class="card-location">📍 {{ hall.location }}, {{ hall.city }}</p>
+
+        <div class="amenity-pills" *ngIf="hall.amenities.length">
+          <span *ngFor="let a of hall.amenities | slice:0:3" class="pill">{{ a }}</span>
+          <span *ngIf="hall.amenities.length > 3" class="pill pill-more">
+            +{{ hall.amenities.length - 3 }}
+          </span>
+        </div>
+
+        <div class="card-footer">
+          <div class="card-price">
+            <span class="price-amount">₹{{ hall.price | number }}</span>
+            <span class="price-unit">/day</span>
+          </div>
+          <button class="btn-view" (click)="viewHall(hall); $event.stopPropagation()">
+            View Details
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

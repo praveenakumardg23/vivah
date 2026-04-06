@@ -1,0 +1,183 @@
+<div class="dashboard">
+
+  <div class="dash-header">
+    <div>
+      <h1>Agent Dashboard</h1>
+      <p>Manage marriage halls and owners</p>
+    </div>
+    <button class="btn-primary" (click)="setTab('add-hall')">
+      + Add Hall
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-icon">🏛️</span>
+      <div>
+        <div class="stat-num">{{ halls.length }}</div>
+        <div class="stat-label">Halls Managed</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">👤</span>
+      <div>
+        <div class="stat-num">{{ owners.length }}</div>
+        <div class="stat-label">Owners</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button [class.active]="activeTab === 'halls'" (click)="setTab('halls')">
+      🏛️ My Halls
+    </button>
+    <button [class.active]="activeTab === 'add-hall'" (click)="setTab('add-hall')">
+      {{ editingHall ? '✏️ Edit Hall' : '➕ Add Hall' }}
+    </button>
+    <button [class.active]="activeTab === 'owners'" (click)="setTab('owners')">
+      👤 Owners
+    </button>
+  </div>
+
+  <!-- TAB: HALLS LIST -->
+  @if (activeTab === 'halls') {
+    <div *ngIf="isLoading" class="loader-wrap"><div class="loader"></div></div>
+
+    <div *ngIf="!isLoading && halls.length === 0" class="empty-state">
+      <span>🏛️</span>
+      <div>No halls added yet.</div>
+      <button class="btn-primary-sm" (click)="setTab('add-hall')">Add your first hall</button>
+    </div>
+
+    <div class="hall-card" *ngFor="let hall of halls">
+      <div class="hall-thumb">
+        <img [src]="hall.images[0] || 'https://via.placeholder.com/100x70'" [alt]="hall.name" />
+      </div>
+      <div class="hall-info">
+        <div class="hall-name">{{ hall.name }}</div>
+        <div class="hall-meta">📍 {{ hall.location }}, {{ hall.city }}</div>
+        <div class="hall-meta">👥 {{ hall.capacity }} · 💰 ₹{{ hall.price | number }}</div>
+        <div class="hall-meta owner-meta">🔑 Owner: {{ hall.owner.name || hall.owner.phone }}</div>
+      </div>
+      <div class="hall-card-actions">
+        <button class="btn-edit" (click)="editHall(hall)">Edit</button>
+        <button class="btn-delete"
+          [disabled]="deletingId === hall._id"
+          (click)="deleteHall(hall._id)">
+          {{ deletingId === hall._id ? '...' : 'Delete' }}
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- TAB: ADD / EDIT HALL -->
+  @if (activeTab === 'add-hall') {
+    <div class="form-card">
+      <h2>{{ editingHall ? 'Edit Hall' : 'Add New Hall' }}</h2>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Hall Name *</label>
+          <input type="text" [(ngModel)]="hallForm.name" placeholder="e.g. Sri Lakshmi Hall" />
+        </div>
+        <div class="form-group">
+          <label>City *</label>
+          <input type="text" [(ngModel)]="hallForm.city" placeholder="e.g. Bangalore" />
+        </div>
+        <div class="form-group">
+          <label>Location / Area *</label>
+          <input type="text" [(ngModel)]="hallForm.location" placeholder="e.g. Jayanagar" />
+        </div>
+        <div class="form-group">
+          <label>Full Address</label>
+          <input type="text" [(ngModel)]="hallForm.address" placeholder="Street, landmark..." />
+        </div>
+        <div class="form-group">
+          <label>Capacity *</label>
+          <input type="number" [(ngModel)]="hallForm.capacity" min="10" />
+        </div>
+        <div class="form-group">
+          <label>Price per Day (₹) *</label>
+          <input type="number" [(ngModel)]="hallForm.price" min="1000" />
+        </div>
+        <div class="form-group full-width">
+          <label>Owner Phone * <small>(will register as OWNER if new)</small></label>
+          <input type="tel" [(ngModel)]="hallForm.ownerPhone" placeholder="10-digit mobile" />
+        </div>
+        <div class="form-group full-width">
+          <label>Description</label>
+          <textarea [(ngModel)]="hallForm.description" placeholder="Describe the hall..."></textarea>
+        </div>
+        <div class="form-group full-width">
+          <label>Amenities (comma-separated)</label>
+          <input type="text" [(ngModel)]="hallAmenitiesInput"
+            placeholder="AC, Parking, Catering, Decoration" />
+        </div>
+        <!-- Images -->
+        <div class="form-group full-width">
+          <label>Image URLs</label>
+          <div class="image-input-row">
+            <input type="url" [(ngModel)]="imageUrlInput" placeholder="Paste image URL..." />
+            <button class="btn-add-img" (click)="addImageUrl(imageUrlInput); imageUrlInput = ''">
+              Add
+            </button>
+          </div>
+          <div class="image-preview" *ngIf="hallForm.images.length > 0">
+            <div class="preview-item" *ngFor="let img of hallForm.images; let i = index">
+              <img [src]="img" />
+              <button class="remove-img" (click)="removeImage(i)">✕</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-primary" (click)="submitHall()" [disabled]="hallSubmitting">
+          {{ hallSubmitting ? 'Saving...' : (editingHall ? 'Update Hall' : 'Create Hall') }}
+        </button>
+        <button class="btn-cancel" (click)="setTab('halls')">Cancel</button>
+      </div>
+
+      <p *ngIf="hallMsg" class="form-msg" [class.error-msg]="hallMsg.startsWith('❌')">
+        {{ hallMsg }}
+      </p>
+    </div>
+  }
+
+  <!-- TAB: OWNERS -->
+  @if (activeTab === 'owners') {
+    <!-- Quick register owner -->
+    <div class="form-card" style="max-width: 480px; margin-bottom: 24px;">
+      <h2>Register an Owner</h2>
+      <p>Enter their phone number to register them as a Hall Owner.</p>
+
+      <label>Phone Number *</label>
+      <input type="tel" [(ngModel)]="ownerPhone" placeholder="10-digit mobile" />
+
+      <label>Name (optional)</label>
+      <input type="text" [(ngModel)]="ownerName" placeholder="Owner's name" />
+
+      <button class="btn-primary" (click)="registerOwner()" [disabled]="ownerSubmitting">
+        {{ ownerSubmitting ? 'Registering...' : 'Register Owner' }}
+      </button>
+      <p *ngIf="ownerMsg" class="form-msg">{{ ownerMsg }}</p>
+    </div>
+
+    <!-- Owners list -->
+    <div class="section-title">All Owners</div>
+    <div *ngIf="owners.length === 0" class="empty-state">No owners registered yet.</div>
+
+    <div class="user-row" *ngFor="let owner of owners">
+      <div class="user-avatar">👤</div>
+      <div class="user-info">
+        <div class="user-name">{{ owner.name || 'Unnamed' }}</div>
+        <div class="user-phone">{{ owner.phone }}</div>
+        <div class="user-email" *ngIf="owner.email">{{ owner.email }}</div>
+      </div>
+      <span class="role-badge role-owner">OWNER</span>
+    </div>
+  }
+
+</div>

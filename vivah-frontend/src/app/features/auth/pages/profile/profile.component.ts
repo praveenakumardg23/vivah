@@ -1,180 +1,151 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { trigger, transition, style, animate } from '@angular/animations';
-
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { UserService } from '../../../../core/services/user.service';
+import { TokenService } from '../../../../core/services/token.service';
+import { User } from '../../../../shared/models/user.model';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDividerModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [CommonModule, FormsModule, MatDialogModule],
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss'],
-  animations: [
-    trigger('slideIn', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(-8px)' }),
-        animate('200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
-      ]),
-      transition(':leave', [
-        animate('150ms ease-in', style({ opacity: 0, transform: 'translateY(-8px)' })),
-      ]),
-    ]),
-  ],
+  styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
-  // ── Form fields ────────────────────────────────────────────
+  user: User | null = null;
+
   name = '';
   phone = '';
   email = '';
-
-  // ── Email verification flow ────────────────────────────────
   isEmailVerified = false;
+
   emailOtp = '';
   showOtpInput = false;
 
-  // ── Loading states ─────────────────────────────────────────
-  isLoadingProfile = true;
   isLoading = false;
   isSendingOtp = false;
   isVerifyingOtp = false;
 
-  // ── Feedback ───────────────────────────────────────────────
   message = '';
-  isSuccess = false;
+  messageType: 'success' | 'error' = 'success';
 
-  constructor(private userService: UserService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private userService: UserService,
+    private tokenService: TokenService,
+    private cdr: ChangeDetectorRef,
+    // @Optional so it works when navigated to as a route (no dialog context)
+    @Optional() private dialogRef: MatDialogRef<ProfileComponent> | null
+  ) {}
 
-  // ── Lifecycle ──────────────────────────────────────────────
-
-  ngOnInit(): void {
+  ngOnInit() {
     this.loadProfile();
   }
 
-  // ── Data fetching ──────────────────────────────────────────
-
-  loadProfile(): void {
-    this.isLoadingProfile = true;
-    this.clearMessage();
-
+  loadProfile() {
     this.userService.getProfile().subscribe({
-      next: (res: any) => {
-        this.name = res.name ?? '';
-        this.phone = res.phone ?? '';
-        this.email = res.email ?? '';
-        this.isEmailVerified = res.isEmailVerified ?? false;
-        this.isLoadingProfile = false;
-        this.cdr.detectChanges();
+      next: (res) => {
+        this.user = res;
+        this.name = res.name || '';
+        this.phone = res.phone;
+        this.email = res.email || '';
+        this.isEmailVerified = res.isEmailVerified;
+        this.cdr.markForCheck();
       },
       error: () => {
-        this.isLoadingProfile = false;
-        this.showMessage('Failed to load profile. Please try again.', false);
-        this.cdr.detectChanges();
-      },
+        this.showMessage('Failed to load profile', 'error');
+        this.cdr.markForCheck();
+      }
     });
   }
 
-  // ── Profile update ─────────────────────────────────────────
-
-  updateProfile(): void {
-    if (this.isLoading) return;
-
+  updateProfile() {
     this.isLoading = true;
-    this.clearMessage();
-
-    this.userService.updateProfile({ name: this.name?.trim(), email: this.email?.trim(), isEmailVerified: this.isEmailVerified }).subscribe({
-      next: () => {
+    this.message = '';
+    this.userService.updateProfile({ name: this.name }).subscribe({
+      next: (res) => {
         this.isLoading = false;
-        this.showMessage('Profile updated successfully!', true);
-        this.cdr.detectChanges();
+        this.name = res.name || '';
+        const stored = this.tokenService.getUserDetails();
+        if (stored) { stored.name = res.name; this.tokenService.setUserDetails(stored); }
+        this.showMessage('Profile updated successfully ✅', 'success');
+        this.cdr.markForCheck();
       },
       error: () => {
         this.isLoading = false;
-        this.showMessage('Failed to save changes. Please try again.', false);
-        this.cdr.detectChanges();
-      },
+        this.showMessage('Failed to update profile ❌', 'error');
+        this.cdr.markForCheck();
+      }
     });
   }
 
-  // ── Email OTP flow ─────────────────────────────────────────
-
-  sendEmailOtp(): void {
-    if (!this.email || this.isSendingOtp) return;
-
+  sendEmailOtp() {
+    if (!this.email || !this.email.includes('@')) {
+      this.showMessage('Enter a valid email address', 'error');
+      return;
+    }
     this.isSendingOtp = true;
-    this.clearMessage();
-
-    this.userService.sendEmailOtp(this.email.trim()).subscribe({
+    this.message = '';
+    this.userService.sendEmailOtp(this.email).subscribe({
       next: () => {
         this.isSendingOtp = false;
         this.showOtpInput = true;
-        this.emailOtp = '';
-        this.cdr.detectChanges();
+        this.showMessage('OTP sent to your email ✅', 'success');
+        this.cdr.markForCheck();
       },
-      error: () => {
+      error: (err) => {
         this.isSendingOtp = false;
-        this.showMessage('Failed to send OTP. Check your email address.', false);
-        this.cdr.detectChanges();
-      },
+        this.showMessage(err?.error?.msg || 'Failed to send OTP ❌', 'error');
+        this.cdr.markForCheck();
+      }
     });
   }
 
-  verifyEmailOtp(): void {
-    if (!this.emailOtp || this.isVerifyingOtp) return;
-
+  verifyEmailOtp() {
+    if (!this.emailOtp || this.emailOtp.length < 4) {
+      this.showMessage('Enter the OTP sent to your email', 'error');
+      return;
+    }
     this.isVerifyingOtp = true;
-    this.clearMessage();
-
-    this.userService.verifyEmailOtp({otp: this.emailOtp?.trim(), email: this.email?.trim() }).subscribe({
+    this.userService.verifyEmailOtp(this.emailOtp).subscribe({
       next: () => {
         this.isVerifyingOtp = false;
         this.isEmailVerified = true;
         this.showOtpInput = false;
         this.emailOtp = '';
-        this.showMessage('Email verified successfully!', true);
-        this.cdr.detectChanges();
+        this.showMessage('Email verified successfully ✅', 'success');
+        this.cdr.markForCheck();
       },
-      error: () => {
+      error: (err) => {
         this.isVerifyingOtp = false;
-        this.showMessage('Incorrect OTP. Please try again.', false);
-        this.cdr.detectChanges();
-      },
+        this.showMessage(err?.error?.msg || 'Invalid or expired OTP ❌', 'error');
+        this.cdr.markForCheck();
+      }
     });
   }
 
-  // ── Helpers ────────────────────────────────────────────────
-
-  private showMessage(text: string, success: boolean): void {
-    this.message = text;
-    this.isSuccess = success;
-
-    // Auto-clear success messages after 4 seconds
-    if (success) {
-      setTimeout(() => this.clearMessage(), 4000);
-    }
+  closeDialog() {
+    this.dialogRef?.close();
   }
 
-  private clearMessage(): void {
-    this.message = '';
-    this.isSuccess = false;
+  get isInDialog(): boolean {
+    return !!this.dialogRef;
+  }
+
+  get roleLabel(): string {
+    const map: Record<string, string> = {
+      USER: '👤 User',
+      OWNER: '🏛️ Hall Owner',
+      AGENT: '🤝 Agent',
+      ADMIN: '🛡️ Admin'
+    };
+    return map[this.user?.role || 'USER'] || '👤 User';
+  }
+
+  private showMessage(msg: string, type: 'success' | 'error') {
+    this.message = msg;
+    this.messageType = type;
+    setTimeout(() => { this.message = ''; }, 4000);
   }
 }

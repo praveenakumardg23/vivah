@@ -14,16 +14,35 @@ export const API_ENDPOINTS = {
   USER: {
     PROFILE: `${API_BASE}/user/profile`,
     SEND_EMAIL_OTP: `${API_BASE}/user/email/send-otp`,
-    VERIFY_EMAIL_OTP: `${API_BASE}/user/email/verify-otp`,
+    VERIFY_EMAIL_OTP: `${API_BASE}/user/email/verify-otp`
   },
 
-  MANTAPA: {
-    CREATE: `${API_BASE}/mantapa`,
-    LIST: `${API_BASE}/mantapa`
+  HALLS: {
+    LIST: `${API_BASE}/halls`,
+    DETAIL: (id: string) => `${API_BASE}/halls/${id}`,
+    AGENT_HALLS: `${API_BASE}/halls/my/agent`,
+    OWNER_HALLS: `${API_BASE}/halls/my/owner`,
+    CREATE: `${API_BASE}/halls`,
+    UPDATE: (id: string) => `${API_BASE}/halls/${id}`,
+    DELETE: (id: string) => `${API_BASE}/halls/${id}`,
+    BLOCKED_DATES: (id: string) => `${API_BASE}/halls/${id}/blocked-dates`
   },
 
-  BOOKING: {
-    CREATE: `${API_BASE}/booking`,
-    LIST: `${API_BASE}/booking`
+  BOOKINGS: {
+    CREATE: `${API_BASE}/bookings`,
+    MY_BOOKINGS: `${API_BASE}/bookings/my`,
+    HALL_BOOKINGS: `${API_BASE}/bookings/hall-bookings`,
+    STATUS: (id: string) => `${API_BASE}/bookings/${id}/status`,
+    CANCEL: (id: string) => `${API_BASE}/bookings/${id}/cancel`,
+    OFFLINE: `${API_BASE}/bookings/offline`
+  },
+
+  ADMIN: {
+    USERS: `${API_BASE}/admin/users`,
+    REGISTER_AGENT: `${API_BASE}/admin/register-agent`,
+    REGISTER_OWNER: `${API_BASE}/admin/register-owner`,
+    UPDATE_ROLE: (id: string) => `${API_BASE}/admin/users/${id}/role`,
+    AGENTS: `${API_BASE}/admin/agents`,
+    OWNERS: `${API_BASE}/admin/owners`
   }
 };
