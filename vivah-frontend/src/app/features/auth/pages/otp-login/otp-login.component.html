@@ -1,121 +1,88 @@
 <div class="login-container">
 
-  <!-- Header -->
-  <div class="login-header">
-    <div class="login-logo">💍 Vivah</div>
-    <h2>
-      @if (step === 'mobile') { Welcome Back }
-      @else if (step === 'otp') { Verify OTP }
-      @else { Agent / Owner Login }
-    </h2>
-    <p>
-      @if (step === 'mobile') { Enter your mobile number to continue }
-      @else if (step === 'otp') { OTP sent to +91 {{ phone }} }
-      @else { Login with your email and password }
+    <!-- Logo -->
+    <div class="logo-section">
+        <div class="logo-mark">
+            <img src="assets/logo/logo1.jpg" alt="💍 Vivah" />
+        </div>
+        <!-- <div class="logo-text">
+            <span class="logo-vivah">Vivah</span>
+            <span class="logo-tagline">Your Perfect Wedding Awaits</span>
+        </div> -->
+    </div>
+
+    <div class="divider">
+        <span>✦</span>
+    </div>
+
+    <h2>{{ step === 'password' ? 'Agent / Owner Login' : 'Welcome Back' }}</h2>
+
+    <!-- MOBILE STEP -->
+    @if (step === 'mobile') {
+    <div>
+
+        <label>Enter Mobile Number</label>
+        <input type="tel" [(ngModel)]="phone" placeholder="10-digit mobile number" />
+
+        <button (click)="sendOtp()" [disabled]="isLoading">
+            {{ isLoading ? 'Sending...' : 'Send OTP' }}
+        </button>
+
+        <p class="agent-link">
+            Are you an Agent / Owner?
+            <span (click)="goToPasswordLogin()">Login here</span>
+        </p>
+
+    </div>
+    }
+
+    <!-- OTP STEP -->
+    @if (step === 'otp') {
+    <div>
+
+        <label>Enter OTP</label>
+        <input type="text" [(ngModel)]="otp" placeholder="Enter OTP sent to +91 {{ phone }}" />
+
+        <button (click)="verifyOtp()" [disabled]="isVerifying">
+            {{ isVerifying ? 'Verifying...' : 'Verify OTP' }}
+        </button>
+
+        <!-- Timer -->
+        @if (timer > 0) {
+        <p class="timer-text">
+            Resend OTP in <strong>{{ timer }}s</strong>
+        </p>
+        }
+
+        @if (timer === 0) {
+        <p class="resend" (click)="resendOtp()">
+            Resend OTP
+        </p>
+        }
+
+    </div>
+    }
+
+    @if (step === 'password') {
+    <div>
+
+        <input type="email" placeholder="Enter email" [(ngModel)]="email" />
+
+        <input type="password" placeholder="Enter password" [(ngModel)]="password" />
+
+        <button (click)="loginWithPassword()">Login</button>
+
+        <p class="agent-link">
+            <span (click)="goToOtpLogin()">← Back to User Login</span>
+        </p>
+
+    </div>
+    }
+
+    @if (errorMessage) {
+    <p class="error">
+        {{ errorMessage }}
     </p>
-  </div>
-
-  <!-- ── STEP 1: MOBILE ─────────────────────────────────── -->
-  @if (step === 'mobile') {
-    <div class="form-group">
-      <label>Mobile Number</label>
-      <div class="phone-input">
-        <span class="country-code">🇮🇳 +91</span>
-        <input
-          type="tel"
-          [(ngModel)]="phone"
-          placeholder="10-digit number"
-          maxlength="10"
-          (keyup.enter)="sendOtp()" />
-      </div>
-    </div>
-
-    <button class="btn-primary" (click)="sendOtp()" [disabled]="isLoading">
-      @if (isLoading) {
-        <span class="spinner"></span> Sending...
-      } @else {
-        Send OTP
-      }
-    </button>
-
-    <div class="divider"><span>or</span></div>
-
-    <button class="btn-secondary" (click)="goToPasswordLogin()">
-      Agent / Owner Login
-    </button>
-  }
-
-  <!-- ── STEP 2: OTP ─────────────────────────────────────── -->
-  @if (step === 'otp') {
-    <div class="form-group">
-      <label>Enter OTP</label>
-      <input
-        class="otp-input"
-        type="text"
-        [(ngModel)]="otp"
-        placeholder="Enter 6-digit OTP"
-        maxlength="6"
-        (keyup.enter)="verifyOtp()" />
-    </div>
-
-    <button class="btn-primary" (click)="verifyOtp()" [disabled]="isVerifying">
-      @if (isVerifying) {
-        <span class="spinner"></span> Verifying...
-      } @else {
-        Verify OTP
-      }
-    </button>
-
-    <div class="resend-row">
-      @if (timer > 0) {
-        <span class="timer-text">Resend OTP in <strong>{{ timer }}s</strong></span>
-      } @else {
-        <button class="btn-link" (click)="resendOtp()">Resend OTP</button>
-      }
-      <button class="btn-link" (click)="goToOtpLogin()">← Change number</button>
-    </div>
-  }
-
-  <!-- ── STEP 3: PASSWORD ────────────────────────────────── -->
-  @if (step === 'password') {
-    <div class="form-group">
-      <label>Email Address</label>
-      <input
-        type="email"
-        [(ngModel)]="email"
-        placeholder="Enter your email"
-        (keyup.enter)="loginWithPassword()" />
-    </div>
-
-    <div class="form-group">
-      <label>Password</label>
-      <input
-        type="password"
-        [(ngModel)]="password"
-        placeholder="Enter your password"
-        (keyup.enter)="loginWithPassword()" />
-    </div>
-
-    <button class="btn-primary" (click)="loginWithPassword()" [disabled]="isLoading">
-      @if (isLoading) {
-        <span class="spinner"></span> Logging in...
-      } @else {
-        Login
-      }
-    </button>
-
-    <div class="divider"><span>or</span></div>
-
-    <button class="btn-secondary" (click)="goToOtpLogin()">
-      ← User OTP Login
-    </button>
-  }
-
-  <!-- Error Message -->
-  @if (errorMessage) {
-    <div class="error-msg">
-      ⚠️ {{ errorMessage }}
-    </div>
-  }
+    }
 
 </div>
