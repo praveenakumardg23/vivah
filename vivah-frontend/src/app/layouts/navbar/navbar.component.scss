@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 20px;
-  background: #b71c1c;
+  background: #ffffff;
   color: white;
   position: sticky;
   top: 0;
@@ -12,10 +12,18 @@
 }
 
 .logo {
-  font-size: 20px;
-  font-weight: bold;
   cursor: pointer;
-  letter-spacing: .5px;
+  display: flex;
+  align-items: center;
+
+  img {
+    height: 60px;
+    width: auto;
+    max-width: 160px;
+    object-fit: contain;
+    border-radius: 6px;
+    display: block;
+  }
 }
 
 .nav-right {
@@ -94,3 +102,4 @@
   color: #c62828;
   font-weight: 600;
 }
+
