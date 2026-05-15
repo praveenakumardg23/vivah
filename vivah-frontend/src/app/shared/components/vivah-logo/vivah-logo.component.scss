@@ -1,0 +1,74 @@
+.vivah-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  /* ─── Sizes ─── */
+  &.size-sm {
+    gap: 6px;
+    .logo-icon { height: 28px; }
+    .logo-text { font-size: 18px; }
+  }
+
+  &.size-md {
+    gap: 8px;
+    .logo-icon { width: 36px; height: 36px; }
+    .logo-text { font-size: 22px; }
+  }
+
+  &.size-lg {
+    gap: 10px;
+    .logo-icon { height: 52px; }
+    .logo-text { font-size: 32px; }
+  }
+
+  &.size-xl {
+    gap: 12px;
+    .logo-icon { height: 72px; border-radius: 12px; }
+    .logo-text { font-size: 44px; }
+  }
+
+  &.size-xxl {
+    gap: 16px;
+    .logo-icon { height: 96px; border-radius: 16px; }
+    .logo-text { font-size: 58px; }
+  }
+
+  &.size-xxxl {
+    gap: 20px;
+    .logo-icon { height: 128px; border-radius: 20px; }
+    .logo-text { font-size: 76px; }
+  }
+
+  /* ─── Inverted: white text on dark bg ─── */
+  &.inverted .logo-text {
+    color: #ffffff;
+  }
+}
+
+/* ─── Icon ─── */
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+/* ─── Text ─── */
+.logo-text {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 800;
+  font-size: 22px;
+  color: #b71c1c;
+  letter-spacing: -0.3px;
+  line-height: 1;
+}

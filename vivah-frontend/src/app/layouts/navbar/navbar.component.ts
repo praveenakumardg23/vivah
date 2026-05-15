@@ -5,23 +5,25 @@ import { TokenService } from '../../core/services/token.service';
 import { MatDialog } from '@angular/material/dialog';
 import { OtpLoginComponent } from '../../features/auth/pages/otp-login/otp-login.component';
 import { ProfileComponent } from '../../features/auth/pages/profile/profile.component';
+import { VivahLogoComponent } from '../../shared/components/vivah-logo/vivah-logo.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, VivahLogoComponent],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+  styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent {
   isLoggedIn$: any;
   role$: any;
+
   isDropdownOpen = false;
 
   constructor(
     private tokenService: TokenService,
     public router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     this.isLoggedIn$ = this.tokenService.isLoggedIn$;
     this.role$ = this.tokenService.roleObservable$;
@@ -43,16 +45,6 @@ export class NavbarComponent {
   logout() {
     this.tokenService.clearTokens();
     this.router.navigate(['/']);
-    this.isDropdownOpen = false;
-  }
-
-  openLogin() {
-    this.dialog.open(OtpLoginComponent, {
-      width: '400px',
-      maxWidth: '90vw',
-      autoFocus: false,
-      panelClass: 'custom-dialog'
-    });
   }
 
   goToProfile() {
@@ -60,7 +52,7 @@ export class NavbarComponent {
       width: '400px',
       maxWidth: '90vw',
       autoFocus: false,
-      panelClass: 'custom-dialog'
+      panelClass: 'custom-dialog',
     });
     this.isDropdownOpen = false;
   }
@@ -75,13 +67,12 @@ export class NavbarComponent {
     this.isDropdownOpen = false;
   }
 
-  goToAgentDashboard() {
-    this.router.navigate(['/agent-dashboard']);
-    this.isDropdownOpen = false;
-  }
-
-  goToAdminDashboard() {
-    this.router.navigate(['/admin-dashboard']);
-    this.isDropdownOpen = false;
+  openLogin() {
+    this.dialog.open(OtpLoginComponent, {
+      width: '400px',
+      maxWidth: '90vw',
+      autoFocus: false,
+      panelClass: 'custom-dialog',
+    });
   }
 }

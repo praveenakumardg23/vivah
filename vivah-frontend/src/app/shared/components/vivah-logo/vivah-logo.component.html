@@ -1,0 +1,22 @@
+<div class="vivah-logo"
+  [class.inverted]="inverted"
+  [class.size-sm]="size === 'sm'"
+  [class.size-md]="size === 'md'"
+  [class.size-lg]="size === 'lg'"
+  [class.size-xl]="size === 'xl'"
+  [class.size-xxl]="size === 'xxl'"
+  [class.size-xxxl]="size === 'xxxl'">
+
+  <!-- Icon -->
+  @if (variant === 'full' || variant === 'icon') {
+    <div class="logo-icon">
+      <img src="assets/logo/logo1.jpg" alt="Vivah" />
+    </div>
+  }
+
+  <!-- Text -->
+  @if (variant === 'full' || variant === 'text') {
+    <span class="logo-text">Vivah</span>
+  }
+
+</div>

@@ -97,44 +97,17 @@
 /* ─── Logo Section ─── */
 .logo-section {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  gap: 4px;
   margin-bottom: 16px;
 }
 
-.logo-mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 150px;
-  height: 150px;
-  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
-  border-radius: 14px;
-  border: 1.5px solid rgba(183, 28, 28, 0.15);
-  box-shadow: 0 2px 8px rgba(183, 28, 28, 0.1);
-  flex-shrink: 0;
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.logo-vivah {
-  font-size: 26px;
-  font-weight: 800;
-  color: #b71c1c;
-  letter-spacing: -0.5px;
-  line-height: 1;
-  font-family: Georgia, 'Times New Roman', serif;
-}
-
 .logo-tagline {
+  margin: 0;
   font-size: 10px;
   color: #999;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   font-weight: 500;
 }

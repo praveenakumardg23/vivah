@@ -2,13 +2,8 @@
 
     <!-- Logo -->
     <div class="logo-section">
-        <div class="logo-mark">
-            <img src="assets/logo/logo1.jpg" alt="💍 Vivah" />
-        </div>
-        <!-- <div class="logo-text">
-            <span class="logo-vivah">Vivah</span>
-            <span class="logo-tagline">Your Perfect Wedding Awaits</span>
-        </div> -->
+        <app-vivah-logo variant="icon" size="xxxl" />
+        <p class="logo-tagline">Your Perfect Wedding Awaits</p>
     </div>
 
     <div class="divider">
@@ -47,7 +42,6 @@
             {{ isVerifying ? 'Verifying...' : 'Verify OTP' }}
         </button>
 
-        <!-- Timer -->
         @if (timer > 0) {
         <p class="timer-text">
             Resend OTP in <strong>{{ timer }}s</strong>
@@ -67,7 +61,6 @@
     <div>
 
         <input type="email" placeholder="Enter email" [(ngModel)]="email" />
-
         <input type="password" placeholder="Enter password" [(ngModel)]="password" />
 
         <button (click)="loginWithPassword()">Login</button>
@@ -80,9 +73,7 @@
     }
 
     @if (errorMessage) {
-    <p class="error">
-        {{ errorMessage }}
-    </p>
+    <p class="error">{{ errorMessage }}</p>
     }
 
 </div>

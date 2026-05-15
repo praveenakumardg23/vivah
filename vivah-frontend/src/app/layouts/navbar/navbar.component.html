@@ -1,53 +1,54 @@
 <div class="navbar">
 
-  <!-- Left -->
-  <div class="logo" (click)="router.navigate(['/'])">
-    <img src="assets/logo/logo1.jpg" alt="💍 Vivah" />
-  </div>
+    <!-- Left: Logo -->
+    <div class="logo" (click)="router.navigate(['/'])">
+        <app-vivah-logo variant="icon" size="xl" [inverted]="false" />
+    </div>
 
-  <!-- Right -->
-  <div class="nav-right">
+    <!-- Right -->
+    <div class="nav-right">
 
-    <!-- Not Logged In -->
-    @if (!(isLoggedIn$ | async)) {
-      <button class="login-btn" (click)="openLogin()">Login</button>
-    } @else {
-      <div class="profile" (click)="toggleDropdown($event)">
+        <!-- ❌ Not Logged In -->
+        @if (!(isLoggedIn$ | async)) {
+        <button class="login-btn" (click)="openLogin()">
+            Login
+        </button>
+        } @else {
+        <div class="profile" (click)="toggleDropdown($event)">
 
-        <div class="avatar">👤</div>
+            <div class="avatar">
+                👤
+            </div>
 
-        <div class="dropdown" *ngIf="isDropdownOpen">
+            <div class="dropdown" *ngIf="isDropdownOpen">
 
-          <div class="item" (click)="goToProfile()">My Profile</div>
+                <div class="item" (click)="goToProfile()">
+                    My Profile
+                </div>
 
-          <!-- USER role: bookings -->
-          <div class="item" (click)="goToBookings()">My Bookings</div>
+                <!-- USER -->
+                @if ((role$ | async) === 'USER') {
+                <div class="item" (click)="goToBookings()">
+                    My Bookings
+                </div>
+                }
 
-          <!-- OWNER role: owner dashboard -->
-          @if ((role$ | async) === 'OWNER') {
-            <div class="item" (click)="goToOwnerDashboard()">Owner Dashboard</div>
-          }
+                <!-- OWNER -->
+                @if ((role$ | async) === 'OWNER') {
+                <div class="item" (click)="goToOwnerDashboard()">
+                    Manage Mantapas
+                </div>
+                }
 
-          <!-- AGENT role: agent + owner dashboards -->
-          @if ((role$ | async) === 'AGENT') {
-            <div class="item" (click)="goToOwnerDashboard()">Owner Dashboard</div>
-            <div class="item" (click)="goToAgentDashboard()">Agent Dashboard</div>
-          }
+                <div class="item logout" (click)="logout()">
+                    Logout
+                </div>
 
-          <!-- ADMIN role: all dashboards -->
-          @if ((role$ | async) === 'ADMIN') {
-            <div class="item" (click)="goToOwnerDashboard()">Owner Dashboard</div>
-            <div class="item" (click)="goToAgentDashboard()">Agent Dashboard</div>
-            <div class="item" (click)="goToAdminDashboard()">Admin Dashboard</div>
-          }
-
-          <div class="divider"></div>
-          <div class="item logout" (click)="logout()">Logout</div>
+            </div>
 
         </div>
-      </div>
-    }
+        }
 
-  </div>
+    </div>
 
 </div>
